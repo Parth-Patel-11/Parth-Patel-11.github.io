@@ -1,0 +1,134 @@
+{
+  "data": {
+        "roll_no": {
+            "rules": [
+                {
+                    "pattern": "^(?=.*\\d)[A-Za-z0-9]+$",
+                    "message": "Roll Number must contain at least one number and be alphanumeric",
+                    "error": "Invalid roll number. It must contain at least one number and be alphanumeric."
+                }
+            ]
+        },
+        "name": {
+            "rules": [
+                {
+                    "pattern": "/^[A-Za-z ]{3,}$/",
+                    "message": "Name must be at least 3 characters long and contain only letters and spaces",
+                    "error": "Invalid Name. It must be at least 3 characters long and contain only letters and spaces."
+                }
+            ]
+        },
+        "mobile_no": {
+            "rules": [
+                {
+                    "pattern": "^[0-9]{10}$",
+                    "message": "Mobile number must be exactly 10 digits",
+                    "error": "Invalid Mobile Number. It must be exactly 10 digits."
+                },
+                {
+                    "pattern": "^[+][0-9]{13}$",
+                    "message": "Mobile number must be exactly 13 digits with the country code",
+                    "error": "Invalid Mobile Number. It must be exactly 13 digits with the country code."
+                }
+            ]
+        },
+        "guardian_name": {
+            "rules": [
+                {
+                    "pattern": "^[A-Za-z ]{3,}$",
+                    "message": "Guardian name must be at least 3 characters long and contain only letters and spaces",
+                    "error": "Invalid Guardian Name. It must be at least 3 characters long and contain only letters and spaces."
+                }
+            ]
+        },
+        "guardian_relation": {
+            "rules": [
+                {
+                    "pattern": "^[A-Za-z ]*$",
+                    "message": "Guardian relation must be a valid string (only letters and spaces)",
+                    "error": "Invalid Guardian Relation. It must only contain letters and spaces."
+                }
+            ]
+        },
+        "guardian_no": {
+            "rules": [
+                {
+                    "pattern": "^[0-9]{10}$",
+                    "message": "Guardian mobile number must be exactly 10 digits",
+                    "error": "Invalid Guardian Mobile Number. It must be exactly 10 digits."
+                },
+                {
+                    "pattern": "^[+][0-9]{13}$",
+                    "message": "Guardian mobile number must be exactly 13 digits with the country code",
+                    "error": "Invalid Guardian Mobile Number. It must be exactly 13 digits with the country code."
+                }
+            ]
+        },
+        "enr_year": {
+            "message": "Enrollment year must be a number greater than 0",
+            "rules": [
+                {
+                    "pattern": "^[1-9][0-9]*$",
+                    "message": "Enrollment year must be a valid positive number greater than 0",
+                    "error": "Invalid Enrollment Year. It must be a positive number greater than 0."
+                }
+            ]
+        },
+        "class": {
+            "rules": [
+                {
+                    "pattern": "^[1-9][0-9]*$",
+                    "message": "Class must be a positive number greater than 0",
+                    "error": "Invalid Class. It must be a positive number greater than 0."
+                }
+            ]
+        },
+        "course": {
+            "rules": [
+                {
+                    "pattern": "^[A-Za-z0-9 ]{3,}$",
+                    "message": "Course name must be at least 3 characters long and contain only alphanumeric characters and spaces",
+                    "error": "Invalid Course Name. It must be at least 3 characters long and contain only alphanumeric characters and spaces."
+                }
+            ]
+        },
+        "course_duration": {
+            "rules": [
+                {
+                    "pattern": "^[1-9][0-9]*$",
+                    "message": "Course duration must be a positive number greater than 0",
+                    "error": "Invalid Course Duration. It must be a positive number greater than 0."
+                }
+            ]
+        },
+        "optional": {
+            "data": {
+                "rules": [
+                    {
+                        "pattern": "^[A-Za-z0-9 ]{1,}$",
+                        "message": "Optional data must be a string with at least 1 character, alphanumeric allowed",
+                        "error": "Invalid Optional Data. It must be a string with at least 1 character, alphanumeric allowed."
+                    }
+                ]
+            },
+            "col_name": {
+                "rules": [
+                    {
+                        "pattern": "^[A-Za-z_]+$",
+                        "message": "Column name must contain only letters and underscores (no numbers allowed).",
+                        "error": "Invalid Column Name. It must contain only letters and underscores (no numbers allowed)"
+                    }
+                ]
+            },
+            "key_optional": {
+                "rules": [
+                    {
+                        "pattern": "^[A-Za-z_]+$",
+                        "message": "Key optional must contain only letters and underscores (no numbers allowed).",
+                        "error": "Invalid Key Optional. It must contain only letters and underscores (no numbers allowed)."
+                    }
+                ]
+            }
+        }
+    }
+}
