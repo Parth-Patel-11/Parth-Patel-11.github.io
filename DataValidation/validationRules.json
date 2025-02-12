@@ -1,216 +1,216 @@
 {
-	"roll_no": {
-		"rules": [
-			{
-				"pattern": "^(?=.*\\d)[A-Za-z0-9]+$",
-				"message": "Roll Number must contain at least one number and be alphanumeric",
-				"error": "Invalid roll number. It must contain at least one number and be alphanumeric."
-			},
-			{
-				"name": "Length Rule",
-				"pattern": "^.{9}$",
-				"message": "Roll number should be exactly 9 characters long.",
-				"errorMessage": "Invalid length! Roll number must be exactly 9 characters."
-			},
-			{
-				"name": "Prefix Rule",
-				"pattern": "^[A-Z]{2,}\\d{2,}$",
-				"message": "Roll number should start with Prefix followed by number (e.g., SCH16).",
-				"errorMessage": "Invalid prefix! Roll number must start with Prefix (e.g., SCH16)."
-			},
-			{
-				"name": "Numeric Sequence Rule",
-				"pattern": "^[A-Z]{2,5}\\d{2,}$",
-				"message": "Roll number should end with a numeric sequence (e.g., ABC012).",
-				"errorMessage": "Invalid Roll number! Roll number should end with a numeric sequence (e.g., ABC012)"
-			},
-			{
-				"name": "No Special Characters Rule",
-				"pattern": "^[A-Z0-9]+$",
-				"message": "Roll number should not contain special characters or spaces (e.g., ABC0001).",
-				"errorMessage": "Invalid characters! Only uppercase letters and numbers are allowed (e.g., ABC0001)."
-			},
-			{
-				"name": "Duplicate Check Rule",
-				"pattern": ".*",
-				"message": "Roll number must be unique and not already registered.",
-				"errorMessage": "This roll number is already registered! Please enter a unique roll number."
-			},
-			{
-				"name": "Format Rule",
-				"pattern": "^[A-Z]{2,5}\\d{4}\\d{3}$",
-				"message": "Roll number must follow the format: [Department Code][Year][Number] (e.g., CS2023001).",
-				"errorMessage": "Invalid format! Please enter a roll number in the correct format (e.g., CS2023001)."
-			},
-			{
-				"name": "Length Rule",
-				"pattern": "^.{8,12}$",
-				"message": "Roll number should be between 8 to 12 characters long.",
-				"errorMessage": "Invalid length! Roll number must be between 8 to 12 characters."
-			},
-			{
-				"name": "Department Code Rule",
-				"pattern": "^(CS|IT|ME|EE|CE)\\d{4}\\d{3}$",
-				"message": "Roll number should start with a valid department code (e.g., CS, IT, ME, EE, CE).",
-				"errorMessage": "Invalid department code! Please enter a valid department code at the beginning."
-			},
-			{
-				"name": "Year Rule",
-				"pattern": "^[A-Z]{2,5}(202[0-9])\\d{3}$",
-				"message": "Roll number should include a valid admission year (e.g., 2022, 2023).",
-				"errorMessage": "Invalid year! The roll number must include a valid year of admission."
-			},
-			{
-				"name": "Numeric Sequence Rule",
-				"pattern": "^[A-Z]{2,5}\\d{4}\\d{3}$",
-				"message": "Roll number should end with a numeric sequence (e.g., 045).",
-				"errorMessage": "Invalid sequence! The last part of the roll number must be a number."
-			},
-			{
-				"name": "Hyphen Usage Rule",
-				"pattern": "^(202[0-9])-(CS|IT|ME|EE|CE)-\\d{3}$",
-				"message": "Roll number should be in the format YYYY-DeptCode-XXX (e.g., 2022-CS-045).",
-				"errorMessage": "Invalid format! Please use hyphens correctly (e.g., 2022-CS-045)."
-			},
-			{
-				"name": "Case Sensitivity Rule",
-				"pattern": "^[A-Z0-9-]+$",
-				"message": "Roll number should be in uppercase (e.g., CS2023001).",
-				"errorMessage": "Invalid case! Please enter the roll number in uppercase (e.g., CS2023001)."
-			},
-			{
-				"name": "No Special Characters Rule",
-				"pattern": "^[A-Z0-9-]+$",
-				"message": "Roll number should not contain special characters except allowed ones (e.g., hyphen).",
-				"errorMessage": "Invalid characters! Only letters, numbers, and hyphens are allowed."
-			},
-			{
-				"name": "No Spaces Rule",
-				"pattern": "^[^\\s]+$",
-				"message": "Roll number should not contain spaces.",
-				"errorMessage": "Invalid input! Spaces are not allowed in the roll number."
-			}
-		]
-	},
-	"name": {
-		"rules": [
-			{
-				"pattern": "/^[A-Za-z ]{3,}$/",
-				"message": "Name must be at least 3 characters long and contain only letters and spaces",
-				"error": "Invalid Name. It must be at least 3 characters long and contain only letters and spaces."
-			}
-		]
-	},
-	"mobile_no": {
-		"rules": [
-			{
-				"pattern": "^[0-9]{10}$",
-				"message": "Mobile number must be exactly 10 digits",
-				"error": "Invalid Mobile Number. It must be exactly 10 digits."
-			},
-			{
-				"pattern": "^[+][0-9]{13}$",
-				"message": "Mobile number must be exactly 13 digits with the country code",
-				"error": "Invalid Mobile Number. It must be exactly 13 digits with the country code."
-			}
-		]
-	},
-	"guardian_name": {
-		"rules": [
-			{
-				"pattern": "^[A-Za-z ]{3,}$",
-				"message": "Guardian name must be at least 3 characters long and contain only letters and spaces",
-				"error": "Invalid Guardian Name. It must be at least 3 characters long and contain only letters and spaces."
-			}
-		]
-	},
-	"guardian_relation": {
-		"rules": [
-			{
-				"pattern": "^[A-Za-z ]*$",
-				"message": "Guardian relation must be a valid string (only letters and spaces)",
-				"error": "Invalid Guardian Relation. It must only contain letters and spaces."
-			}
-		]
-	},
-	"guardian_no": {
-		"rules": [
-			{
-				"pattern": "^[0-9]{10}$",
-				"message": "Guardian mobile number must be exactly 10 digits",
-				"error": "Invalid Guardian Mobile Number. It must be exactly 10 digits."
-			},
-			{
-				"pattern": "^[+][0-9]{13}$",
-				"message": "Guardian mobile number must be exactly 13 digits with the country code",
-				"error": "Invalid Guardian Mobile Number. It must be exactly 13 digits with the country code."
-			}
-		]
-	},
-	"enr_year": {
-		"message": "Enrollment year must be a number greater than 0",
-		"rules": [
-			{
-				"pattern": "^[1-9][0-9]*$",
-				"message": "Enrollment year must be a valid positive number greater than 0",
-				"error": "Invalid Enrollment Year. It must be a positive number greater than 0."
-			}
-		]
-	},
-	"class": {
-		"rules": [
-			{
-				"pattern": "^[1-9][0-9]*$",
-				"message": "Class must be a positive number greater than 0",
-				"error": "Invalid Class. It must be a positive number greater than 0."
-			}
-		]
-	},
-	"course": {
-		"rules": [
-			{
-				"pattern": "^[A-Za-z0-9 ]{3,}$",
-				"message": "Course name must be at least 3 characters long and contain only alphanumeric characters and spaces",
-				"error": "Invalid Course Name. It must be at least 3 characters long and contain only alphanumeric characters and spaces."
-			}
-		]
-	},
-	"course_duration": {
-		"rules": [
-			{
-				"pattern": "^[1-9][0-9]*$",
-				"message": "Course duration must be a positive number greater than 0",
-				"error": "Invalid Course Duration. It must be a positive number greater than 0."
-			}
-		]
-	},
-	"optional": {
-		"data": {
-			"rules": [
-				{
-					"pattern": "^[A-Za-z0-9 ]{1,}$",
-					"message": "Optional data must be a string with at least 1 character, alphanumeric allowed",
-					"error": "Invalid Optional Data. It must be a string with at least 1 character, alphanumeric allowed."
-				}
-			]
-		},
-		"col_name": {
-			"rules": [
-				{
-					"pattern": "^[A-Za-z_]+$",
-					"message": "Column name must contain only letters and underscores (no numbers allowed).",
-					"error": "Invalid Column Name. It must contain only letters and underscores (no numbers allowed)"
-				}
-			]
-		},
-		"key_optional": {
-			"rules": [
-				{
-					"pattern": "^[A-Za-z_]+$",
-					"message": "Key optional must contain only letters and underscores (no numbers allowed).",
-					"error": "Invalid Key Optional. It must contain only letters and underscores (no numbers allowed)."
-				}
-			]
-		}
-	}
+  "roll_no": {
+    "rules": [
+      {
+        "pattern": "^(?=.*\\d)[A-Za-z0-9]+$",
+        "message": "Roll Number must contain at least one number and be alphanumeric",
+        "error": "Invalid roll number. It must contain at least one number and be alphanumeric."
+      },
+      {
+        "name": "Length Rule",
+        "pattern": "^.{9}$",
+        "message": "Roll number should be exactly 9 characters long.",
+        "errorMessage": "Invalid length! Roll number must be exactly 9 characters."
+      },
+      {
+        "name": "Prefix Rule",
+        "pattern": "^[A-Z]{2,}\\d{2,}$",
+        "message": "Roll number should start with Prefix followed by number (e.g., SCH16).",
+        "errorMessage": "Invalid prefix! Roll number must start with Prefix (e.g., SCH16)."
+      },
+      {
+        "name": "Numeric Sequence Rule",
+        "pattern": "^[A-Z]{2,5}\\d{2,}$",
+        "message": "Roll number should end with a numeric sequence (e.g., ABC012).",
+        "errorMessage": "Invalid Roll number! Roll number should end with a numeric sequence (e.g., ABC012)"
+      },
+      {
+        "name": "No Special Characters Rule",
+        "pattern": "^[A-Z0-9]+$",
+        "message": "Roll number should not contain special characters or spaces (e.g., ABC0001).",
+        "errorMessage": "Invalid characters! Only uppercase letters and numbers are allowed (e.g., ABC0001)."
+      },
+      {
+        "name": "Duplicate Check Rule",
+        "pattern": ".*",
+        "message": "Roll number must be unique and not already registered.",
+        "errorMessage": "This roll number is already registered! Please enter a unique roll number."
+      },
+      {
+        "name": "Format Rule",
+        "pattern": "^[A-Z]{2,5}\\d{4}\\d{3}$",
+        "message": "Roll number must follow the format: [Department Code][Year][Number] (e.g., CS2023001).",
+        "errorMessage": "Invalid format! Please enter a roll number in the correct format (e.g., CS2023001)."
+      },
+      {
+        "name": "Length Rule",
+        "pattern": "^.{8,12}$",
+        "message": "Roll number should be between 8 to 12 characters long.",
+        "errorMessage": "Invalid length! Roll number must be between 8 to 12 characters."
+      },
+      {
+        "name": "Department Code Rule",
+        "pattern": "^(CS|IT|ME|EE|CE)\\d{4}\\d{3}$",
+        "message": "Roll number should start with a valid department code (e.g., CS, IT, ME, EE, CE).",
+        "errorMessage": "Invalid department code! Please enter a valid department code at the beginning."
+      },
+      {
+        "name": "Year Rule",
+        "pattern": "^[A-Z]{2,5}(202[0-9])\\d{3}$",
+        "message": "Roll number should include a valid admission year (e.g., 2022, 2023).",
+        "errorMessage": "Invalid year! The roll number must include a valid year of admission."
+      },
+      {
+        "name": "Numeric Sequence Rule",
+        "pattern": "^[A-Z]{2,5}\\d{4}\\d{3}$",
+        "message": "Roll number should end with a numeric sequence (e.g., 045).",
+        "errorMessage": "Invalid sequence! The last part of the roll number must be a number."
+      },
+      {
+        "name": "Hyphen Usage Rule",
+        "pattern": "^(202[0-9])-(CS|IT|ME|EE|CE)-\\d{3}$",
+        "message": "Roll number should be in the format YYYY-DeptCode-XXX (e.g., 2022-CS-045).",
+        "errorMessage": "Invalid format! Please use hyphens correctly (e.g., 2022-CS-045)."
+      },
+      {
+        "name": "Case Sensitivity Rule",
+        "pattern": "^[A-Z0-9-]+$",
+        "message": "Roll number should be in uppercase (e.g., CS2023001).",
+        "errorMessage": "Invalid case! Please enter the roll number in uppercase (e.g., CS2023001)."
+      },
+      {
+        "name": "No Special Characters Rule",
+        "pattern": "^[A-Z0-9-]+$",
+        "message": "Roll number should not contain special characters except allowed ones (e.g., hyphen).",
+        "errorMessage": "Invalid characters! Only letters, numbers, and hyphens are allowed."
+      },
+      {
+        "name": "No Spaces Rule",
+        "pattern": "^[^\\s]+$",
+        "message": "Roll number should not contain spaces.",
+        "errorMessage": "Invalid input! Spaces are not allowed in the roll number."
+      }
+    ]
+  },
+  "name": {
+    "rules": [
+      {
+        "pattern": "/^[A-Za-z ]{3,}$/",
+        "message": "Name must be at least 3 characters long and contain only letters and spaces",
+        "error": "Invalid Name. It must be at least 3 characters long and contain only letters and spaces."
+      }
+    ]
+  },
+  "mobile_no": {
+    "rules": [
+      {
+        "pattern": "^[0-9]{10}$",
+        "message": "Mobile number must be exactly 10 digits",
+        "error": "Invalid Mobile Number. It must be exactly 10 digits."
+      },
+      {
+        "pattern": "^[+][0-9]{13}$",
+        "message": "Mobile number must be exactly 13 digits with the country code",
+        "error": "Invalid Mobile Number. It must be exactly 13 digits with the country code."
+      }
+    ]
+  },
+  "guardian_name": {
+    "rules": [
+      {
+        "pattern": "^[A-Za-z ]{3,}$",
+        "message": "Guardian name must be at least 3 characters long and contain only letters and spaces",
+        "error": "Invalid Guardian Name. It must be at least 3 characters long and contain only letters and spaces."
+      }
+    ]
+  },
+  "guardian_relation": {
+    "rules": [
+      {
+        "pattern": "^[A-Za-z ]*$",
+        "message": "Guardian relation must be a valid string (only letters and spaces)",
+        "error": "Invalid Guardian Relation. It must only contain letters and spaces."
+      }
+    ]
+  },
+  "guardian_no": {
+    "rules": [
+      {
+        "pattern": "^[0-9]{10}$",
+        "message": "Guardian mobile number must be exactly 10 digits",
+        "error": "Invalid Guardian Mobile Number. It must be exactly 10 digits."
+      },
+      {
+        "pattern": "^[+][0-9]{13}$",
+        "message": "Guardian mobile number must be exactly 13 digits with the country code",
+        "error": "Invalid Guardian Mobile Number. It must be exactly 13 digits with the country code."
+      }
+    ]
+  },
+  "enr_year": {
+    "message": "Enrollment year must be a number greater than 0",
+    "rules": [
+      {
+        "pattern": "^[1-9][0-9]*$",
+        "message": "Enrollment year must be a valid positive number greater than 0",
+        "error": "Invalid Enrollment Year. It must be a positive number greater than 0."
+      }
+    ]
+  },
+  "class": {
+    "rules": [
+      {
+        "pattern": "^[1-9][0-9]*$",
+        "message": "Class must be a positive number greater than 0",
+        "error": "Invalid Class. It must be a positive number greater than 0."
+      }
+    ]
+  },
+  "course": {
+    "rules": [
+      {
+        "pattern": "^[A-Za-z0-9 ]{3,}$",
+        "message": "Course name must be at least 3 characters long and contain only alphanumeric characters and spaces",
+        "error": "Invalid Course Name. It must be at least 3 characters long and contain only alphanumeric characters and spaces."
+      }
+    ]
+  },
+  "course_duration": {
+    "rules": [
+      {
+        "pattern": "^[1-9][0-9]*$",
+        "message": "Course duration must be a positive number greater than 0",
+        "error": "Invalid Course Duration. It must be a positive number greater than 0."
+      }
+    ]
+  },
+  "optional": {
+    "data": {
+      "rules": [
+        {
+          "pattern": "^[A-Za-z0-9 ]{1,}$",
+          "message": "Optional data must be a string with at least 1 character, alphanumeric allowed",
+          "error": "Invalid Optional Data. It must be a string with at least 1 character, alphanumeric allowed."
+        }
+      ]
+    },
+    "col_name": {
+      "rules": [
+        {
+          "pattern": "^[A-Za-z_]+$",
+          "message": "Column name must contain only letters and underscores (no numbers allowed).",
+          "error": "Invalid Column Name. It must contain only letters and underscores (no numbers allowed)"
+        }
+      ]
+    },
+    "key_optional": {
+      "rules": [
+        {
+          "pattern": "^[A-Za-z_]+$",
+          "message": "Key optional must contain only letters and underscores (no numbers allowed).",
+          "error": "Invalid Key Optional. It must contain only letters and underscores (no numbers allowed)."
+        }
+      ]
+    }
+  }
 }
