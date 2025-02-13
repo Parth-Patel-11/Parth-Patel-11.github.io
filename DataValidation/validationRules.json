@@ -60,7 +60,7 @@
 			},
 			{
 				"name": "Department Code Rule",
-				"pattern": "/^(CS|IT|ME|EE|CE)\\d{4}\\d{3}$/",
+				"pattern": "^(CS|IT|ME|EE|CE)\\d{4}\\d{3}$",
 				"message": "Roll number should start with a valid department code (e.g., CS, IT, ME, EE, CE).",
 				"error": "Invalid department code! Please enter a valid department code at the beginning."
 			},
@@ -105,7 +105,7 @@
 	"name": {
 		"rules": [
 			{
-				"pattern": "/^[A-Za-z ]{3,}$/",
+				"pattern": "^[A-Za-z ]{3,}$",
 				"message": "Name must be at least 3 characters long and contain only letters and spaces",
 				"error": "Invalid Name. It must be at least 3 characters long and contain only letters and spaces."
 			}
