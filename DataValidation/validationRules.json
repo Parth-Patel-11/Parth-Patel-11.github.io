@@ -146,12 +146,12 @@
 	"guardian_no": {
 		"rules": [
 			{
-				"pattern": "/^[0-9]{10}$/",
+				"pattern": "^[0-9]{10}$",
 				"message": "Guardian mobile number must be exactly 10 digits",
 				"error": "Invalid Guardian Mobile Number. It must be exactly 10 digits."
 			},
 			{
-				"pattern": "/^[+][0-9]{13}$/",
+				"pattern": "^[+][0-9]{13}$",
 				"message": "Guardian mobile number must be exactly 13 digits with the country code",
 				"error": "Invalid Guardian Mobile Number. It must be exactly 13 digits with the country code."
 			}
