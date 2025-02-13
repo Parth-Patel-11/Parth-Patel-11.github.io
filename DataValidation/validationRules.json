@@ -60,7 +60,7 @@
 			},
 			{
 				"name": "Department Code Rule",
-				"pattern": "^(CS|IT|ME|EE|CE)\\d{4}\\d{3}$",
+				"pattern": "/^(CS|IT|ME|EE|CE)\\d{4}\\d{3}$/",
 				"message": "Roll number should start with a valid department code (e.g., CS, IT, ME, EE, CE).",
 				"error": "Invalid department code! Please enter a valid department code at the beginning."
 			},
@@ -146,12 +146,12 @@
 	"guardian_no": {
 		"rules": [
 			{
-				"pattern": "^[0-9]{10}$",
+				"pattern": "/^[0-9]{10}$/",
 				"message": "Guardian mobile number must be exactly 10 digits",
 				"error": "Invalid Guardian Mobile Number. It must be exactly 10 digits."
 			},
 			{
-				"pattern": "^[+][0-9]{13}$",
+				"pattern": "/^[+][0-9]{13}$/",
 				"message": "Guardian mobile number must be exactly 13 digits with the country code",
 				"error": "Invalid Guardian Mobile Number. It must be exactly 13 digits with the country code."
 			}
