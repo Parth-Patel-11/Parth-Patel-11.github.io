@@ -36,222 +36,245 @@
             FEE_DUE ||--o{ STUDENT_FEES : "relates to"
 
             CUSTOMER_REQ {
-                INT comp_cd
-                INT tran_cd
-                DATETIME req_dt
-                VARCHAR cust_name
-                VARCHAR cust_type
-                VARCHAR regi_no
-                BLOB logo
-                VARCHAR mobile
-                VARCHAR email_id
-                VARCHAR doc_type
-                BLOB document
-                TEXT checker_remarks
-                YEAR est_year
-                VARCHAR city
-                VARCHAR state
-                VARCHAR postal_cd
-                VARCHAR country
-                VARCHAR website
-                BOOLEAN active
-                BOOLEAN confirmed
-                INT entered_by
-                DATETIME entered_date
-                VARCHAR ip_address
-                INT last_entered_by
-                INT last_modified_by
-                DATETIME last_modified_date
-                VARCHAR last_ip_address
-                INT verified_by
-                DATETIME verified_date
+               INT comp_cd
+    INT tran_cd
+    DATETIME req_dt
+    VARCHAR cust_name
+    VARCHAR cust_type
+    VARCHAR regi_no
+    BLOB logo
+    VARCHAR mobile
+    VARCHAR email_id
+    VARCHAR doc_type
+    BLOB document
+    TEXT checker_remarks
+    YEAR est_year
+    VARCHAR city
+    VARCHAR state
+    VARCHAR postal_cd
+    VARCHAR country
+    VARCHAR website
+    BOOLEAN active
+    BOOLEAN confirmed
+    INT entered_by
+    DATETIME entered_date
+    VARCHAR ip_address
+    INT last_entered_by
+    INT last_modified_by
+    DATETIME last_modified_date
+    VARCHAR last_ip_address
+    INT verified_by
+    DATETIME verified_date
+    VARCHAR verified_ip_address
                 VARCHAR verified_ip_address
             }
             CUSTOMER_MASTER {
-                INT comp_cd
-                INT cust_id
-                DATETIME req_dt
-                VARCHAR cust_name
-                VARCHAR cust_type
-                VARCHAR regi_no
-                BLOB logo
-                VARCHAR mobile
-                VARCHAR email_id
-                VARCHAR doc_type
-                BLOB document
-                TEXT checker_remarks
-                BOOLEAN active
-                YEAR est_year
-                VARCHAR city
-                VARCHAR state
-                VARCHAR postal_cd
-                VARCHAR country
-                VARCHAR website
+               INT comp_cd
+    INT cust_id
+    DATETIME req_dt
+    VARCHAR cust_name
+    VARCHAR cust_type
+    VARCHAR regi_no
+    BLOB logo
+    VARCHAR mobile
+    VARCHAR email_id
+    VARCHAR doc_type
+    BLOB document
+    TEXT checker_remarks
+    BOOLEAN active
+    YEAR est_year
+    VARCHAR city
+    VARCHAR state
+    VARCHAR postal_cd
+    VARCHAR country
+    VARCHAR website
             }
             PAYMENT_TRANSACTIONS {
-                BIGINT transaction_id
-                INT comp_cd
-                INT cust_id
-                BIGINT student_id
-                DECIMAL amount
-                VARCHAR currency
-                ENUM payment_method
-                DATETIME transaction_date
-                ENUM status
+               BIGINT transaction_id
+    INT comp_cd
+    INT cust_id
+    BIGINT student_id
+    BIGINT fee_id
+    DECIMAL amount_paid
+    ENUM payment_mode
+    VARCHAR reference_no
+    TIMESTAMP payment_date
+    ENUM status
+    TEXT failure_reason
+    BIGINT entered_by
+    TIMESTAMP entered_date
             }
             FEE_REFUNDS {
-                BIGINT refund_id
-                INT comp_cd
-                INT cust_id
-                BIGINT transaction_id
-                DECIMAL refund_amount
-                VARCHAR reason
-                DATETIME refund_date
-                ENUM status
-            }
+    BIGINT refund_id
+    INT comp_cd
+    INT cust_id
+    BIGINT student_id
+    BIGINT fee_id
+    DECIMAL refund_amount
+    TEXT refund_reason
+    ENUM refund_status
+    BIGINT approved_by
+    TIMESTAMP approval_date
+    BIGINT initiated_by
+    TIMESTAMP initiated_date
+}
             DEPARTMENT_MASTER {
-                INT comp_cd
-                INT cust_id
-                INT dept_id
-                VARCHAR name
-                INT entered_by
-                DATETIME entered_date
+                 INT comp_cd
+    INT cust_id
+    INT dept_id
+    VARCHAR name
+    INT entered_by
+    TIMESTAMP entered_date
             }
             COURSE_MASTER {
                 INT comp_cd
-                INT cust_id
-                INT course_id
-                INT dept_id
-                VARCHAR name
-                INT duration_years
-                VARCHAR academic_level
-                BIGINT created_by
-                DATETIME created_at
+    INT cust_id
+    INT course_id
+    INT dept_id
+    VARCHAR name
+    INT duration_years
+    VARCHAR academic_level
+    BIGINT created_by
+    TIMESTAMP created_at
             }
             BATCH_MASTER {
-                BIGINT batch_id
-                INT comp_cd
-                INT cust_id
-                INT course_id
-                YEAR start_year
-                YEAR end_year
-                INT entered_by
-                DATETIME entered_date
+               BIGINT batch_id
+    INT comp_cd
+    INT cust_id
+    BIGINT course_id
+    YEAR start_year
+    YEAR end_year
+    BIGINT entered_by
+    TIMESTAMP entered_date
             }
             SECTION {
-                INT comp_cd
-                INT cust_id
-                INT section_id
-                INT course_id
-                VARCHAR name
-                DATE start_date
-                DATE end_date
-                INT entered_by
-                DATETIME entered_date
+               INT comp_cd
+    INT cust_id
+    INT section_id
+    INT course_id
+    VARCHAR name
+    DATE start_date
+    DATE end_date
+    BIGINT entered_by
+    TIMESTAMP entered_date
             }
             SUBJECT_MASTER {
-                INT comp_cd
-                INT cust_id
-                INT subject_id
-                INT course_id
-                VARCHAR name
-                INT amount
-                INT entered_by
-                DATETIME entered_date
+               INT comp_cd
+    INT cust_id
+    INT subject_id
+    INT course_id
+    VARCHAR name
+    INT amount
+    BIGINT entered_by
+    TIMESTAMP entered_date
             }
             STUDENT_MASTER {
-                INT comp_cd
-                INT cust_id
-                INT student_id
-                VARCHAR name
-                VARCHAR email
-                VARCHAR mobile
-                DATE admission_date
-                INT course_id
-                INT entered_by
-                DATETIME entered_date
+               INT comp_cd
+    INT cust_id
+    INT student_id
+    VARCHAR name
+    VARCHAR email
+    VARCHAR mobile
+    DATE admission_date
+    INT course_id
+    BIGINT entered_by
+    TIMESTAMP entered_date
             }
             STUDENT_SUBJECT_MAP {
-                BIGINT std_sub_id
-                BIGINT student_id
-                BIGINT subject_id
-                INT comp_cd
-                INT cust_id
-                DATETIME assigned_date
-                BOOLEAN is_active
+               BIGINT std_sub_id
+    BIGINT student_id
+    BIGINT subject_id
+    INT comp_cd
+    INT cust_id
+    TIMESTAMP assigned_date
+    BOOLEAN is_active
             }
             FEE_ADJUSTMENT {
-                BIGINT adjustment_id
-                INT comp_cd
-                INT cust_id
-                BIGINT due_id
-                DECIMAL adjustment_amount
-                VARCHAR reason
-                INT approved_by
-                DATETIME approved_date
+               BIGINT adjustment_id
+    INT comp_cd
+    INT cust_id
+    BIGINT student_id
+    BIGINT due_id
+    ENUM adjustment_type
+    DECIMAL adjustment_amount
+    VARCHAR reason
+    BIGINT adjusted_by
+    TIMESTAMP adjusted_date
             }
             FEE_PENALTY {
-                INT penalty_id
-                INT comp_cd
-                INT cust_id
-                INT section_id
-                ENUM penalty_type
-                DECIMAL amount
-                DECIMAL max_amount
+               BIGINT penalty_id
+    INT comp_cd
+    INT cust_id
+    BIGINT section_id
+    ENUM penalty_type
+    DECIMAL amount
+    DECIMAL max_amount
+    BIGINT entered_by
+    TIMESTAMP entered_date
             }
             FEE_DUE {
-                INT due_id
-                INT comp_cd
-                INT cust_id
-                INT student_id
-                INT fee_id
-                DECIMAL original_due
-                DECIMAL penalty_amount
-                DECIMAL total_due
-                DATE due_date
-                ENUM status
-                DECIMAL paid_amount
-                DATE payment_date
+                BIGINT due_id
+    INT comp_cd
+    INT cust_id
+    BIGINT student_id
+    BIGINT fee_id
+    DECIMAL original_due
+    DECIMAL penalty_amount
+    DECIMAL total_due
+    DATE due_date
+    ENUM status
+    DECIMAL paid_amount
+    DATE payment_date
+    BIGINT entered_by
+    TIMESTAMP entered_date
             }
             STUDENT_FEES {
-                INT student_fee_id
-                INT comp_cd
-                INT cust_id
-                INT student_id
-                INT fee_id
-                DECIMAL original_fee
-                DECIMAL discount
-                DECIMAL scholarship
-                DECIMAL final_fee
-                ENUM payment_status
-                DATE due_date
-                DATE paid_date
+                BIGINT student_fee_id
+    INT comp_cd
+    INT cust_id
+    BIGINT student_id
+    BIGINT fee_id
+    DECIMAL original_fee
+    DECIMAL discount
+    DECIMAL scholarship
+    DECIMAL final_fee
+    ENUM payment_status
+    DATE due_date
+    DATE paid_date
+    BIGINT entered_by
+    TIMESTAMP entered_date
             }
             FEE_STRUCTURE {
-                INT fee_id
-                INT comp_cd
-                INT cust_id
-                INT course_id
-                INT batch_id
-                INT fee_c_cat_id
-                INT fee_cat_id
-                BIGINT total_fees
-                VARCHAR currency
-                ENUM frequency
+                BIGINT fee_id
+    INT comp_cd
+    INT cust_id
+    BIGINT course_id
+    BIGINT batch_id
+    BIGINT fee_c_cat_id
+    BIGINT fee_cat_id
+    BIGINT total_fees
+    VARCHAR currency
+    ENUM frequency
+    BIGINT entered_by
+    TIMESTAMP entered_date
             }
             FEE_CATEGORY {
-                INT comp_cd
-                INT cust_id
-                INT fee_cat_id
-                VARCHAR name
-                DECIMAL base_fee
+               INT comp_cd
+    INT cust_id
+    BIGINT fee_cat_id
+    VARCHAR name
+    DECIMAL base_fee
+    BIGINT entered_by
+    TIMESTAMP entered_date
             }
             CAST_WISE_FEE_CATEGORY {
                 INT comp_cd
-                INT cust_id
-                INT fee_c_cat_id
-                VARCHAR name
-                DECIMAL scholarship_percentage
+    INT cust_id
+    INT fee_c_cat_id
+    VARCHAR name
+    DECIMAL scholarship_percentage
+    BIGINT entered_by
+    TIMESTAMP entered_date
             }
     </div>
 </body>
