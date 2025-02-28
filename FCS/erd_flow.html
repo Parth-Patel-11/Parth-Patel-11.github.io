@@ -191,51 +191,67 @@
                 DATETIME approved_date
             }
             FEE_PENALTY {
-                BIGINT penalty_id
+                INT penalty_id
                 INT comp_cd
                 INT cust_id
-                BIGINT due_id
-                DECIMAL penalty_amount
-                DATETIME penalty_date
-                ENUM status
+                INT section_id
+                ENUM penalty_type
+                DECIMAL amount
+                DECIMAL max_amount
             }
             FEE_DUE {
-                BIGINT due_id
+                INT due_id
                 INT comp_cd
                 INT cust_id
-                BIGINT student_id
-                DECIMAL due_amount
-                DATETIME due_date
+                INT student_id
+                INT fee_id
+                DECIMAL original_due
+                DECIMAL penalty_amount
+                DECIMAL total_due
+                DATE due_date
                 ENUM status
+                DECIMAL paid_amount
+                DATE payment_date
             }
             STUDENT_FEES {
-                BIGINT fee_id
+                INT student_fee_id
                 INT comp_cd
                 INT cust_id
-                BIGINT student_id
-                DECIMAL paid_amount
-                DATETIME payment_date
-                ENUM status
+                INT student_id
+                INT fee_id
+                DECIMAL original_fee
+                DECIMAL discount
+                DECIMAL scholarship
+                DECIMAL final_fee
+                ENUM payment_status
+                DATE due_date
+                DATE paid_date
             }
             FEE_STRUCTURE {
-                BIGINT structure_id
+                INT fee_id
                 INT comp_cd
                 INT cust_id
-                VARCHAR structure_name
-                DECIMAL amount
-                ENUM status
+                INT course_id
+                INT batch_id
+                INT fee_c_cat_id
+                INT fee_cat_id
+                BIGINT total_fees
+                VARCHAR currency
+                ENUM frequency
             }
             FEE_CATEGORY {
-                INT category_id
                 INT comp_cd
                 INT cust_id
-                VARCHAR category_name
+                INT fee_cat_id
+                VARCHAR name
+                DECIMAL base_fee
             }
             CAST_WISE_FEE_CATEGORY {
-                INT cast_category_id
                 INT comp_cd
                 INT cust_id
-                VARCHAR cast_category_name
+                INT fee_c_cat_id
+                VARCHAR name
+                DECIMAL scholarship_percentage
             }
     </div>
 </body>
