@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FCS ERD Diagram</title>
+    <title>ERD Diagram</title>
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({ startOnLoad: true });
     </script>
 </head>
 <body>
-    <h2>FCS Entity-Relationship Diagram</h2>
+    <h2>Entity-Relationship Diagram</h2>
     <div class="mermaid">
         erDiagram
             CUSTOMER_REQ ||--o{ CUSTOMER_MASTER : "creates"
             CUSTOMER_MASTER ||--o{ DEPARTMENT_MASTER : "has"
             DEPARTMENT_MASTER ||--o{ COURSE_MASTER : "offers"
-            COURSE_MASTER ||--o{ SECTION : "divides into"
+            COURSE_MASTER ||--o{ BATCH_MASTER : "contains"
+            BATCH_MASTER ||--o{ SECTION : "has"
             COURSE_MASTER ||--o{ SUBJECT_MASTER : "contains"
             COURSE_MASTER ||--o{ STUDENT_MASTER : "enrolls"
             STUDENT_MASTER ||--o{ STUDENT_SUBJECT_MAP : "maps subjects"
@@ -24,10 +25,15 @@
             STUDENT_MASTER ||--o{ STUDENT_FEES : "pays"
             STUDENT_FEES ||--o{ FEE_DUE : "generates due"
             FEE_DUE ||--o{ FEE_PENALTY : "may incur penalty"
+            FEE_DUE ||--o{ FEE_ADJUSTMENT : "adjusts"
             FEE_CATEGORY ||--o{ FEE_STRUCTURE : "defines"
             FEE_STRUCTURE ||--o{ STUDENT_FEES : "applies"
             FEE_STRUCTURE ||--o{ FEE_DUE : "affects"
-            FEE_CAST_CATEGORY ||--o{ FEE_STRUCTURE : "influences"
+            FEE_STRUCTURE ||--o{ PAYMENT_TRANSACTIONS : "records payments"
+            PAYMENT_TRANSACTIONS ||--o{ FEE_REFUNDS : "handles refunds"
+            CAST_WISE_FEE_CATEGORY ||--o{ FEE_STRUCTURE : "categorizes"
+            FEE_CATEGORY ||--o{ FEE_STRUCTURE : "belongs to"
+            FEE_DUE ||--o{ STUDENT_FEES : "relates to"
 
             CUSTOMER_REQ {
                 INT comp_cd
@@ -82,6 +88,27 @@
                 VARCHAR country
                 VARCHAR website
             }
+            PAYMENT_TRANSACTIONS {
+                BIGINT transaction_id
+                INT comp_cd
+                INT cust_id
+                BIGINT student_id
+                DECIMAL amount
+                VARCHAR currency
+                ENUM payment_method
+                DATETIME transaction_date
+                ENUM status
+            }
+            FEE_REFUNDS {
+                BIGINT refund_id
+                INT comp_cd
+                INT cust_id
+                BIGINT transaction_id
+                DECIMAL refund_amount
+                VARCHAR reason
+                DATETIME refund_date
+                ENUM status
+            }
             DEPARTMENT_MASTER {
                 INT comp_cd
                 INT cust_id
@@ -98,6 +125,18 @@
                 VARCHAR name
                 INT duration_years
                 VARCHAR academic_level
+                BIGINT created_by
+                DATETIME created_at
+            }
+            BATCH_MASTER {
+                BIGINT batch_id
+                INT comp_cd
+                INT cust_id
+                INT course_id
+                YEAR start_year
+                YEAR end_year
+                INT entered_by
+                DATETIME entered_date
             }
             SECTION {
                 INT comp_cd
@@ -107,6 +146,8 @@
                 VARCHAR name
                 DATE start_date
                 DATE end_date
+                INT entered_by
+                DATETIME entered_date
             }
             SUBJECT_MASTER {
                 INT comp_cd
@@ -115,6 +156,8 @@
                 INT course_id
                 VARCHAR name
                 INT amount
+                INT entered_by
+                DATETIME entered_date
             }
             STUDENT_MASTER {
                 INT comp_cd
@@ -129,76 +172,70 @@
                 DATETIME entered_date
             }
             STUDENT_SUBJECT_MAP {
-                INT std_sub_id
-                INT student_id
-                INT subject_id
+                BIGINT std_sub_id
+                BIGINT student_id
+                BIGINT subject_id
                 INT comp_cd
                 INT cust_id
                 DATETIME assigned_date
                 BOOLEAN is_active
             }
-            FEE_CATEGORY {
+            FEE_ADJUSTMENT {
+                BIGINT adjustment_id
                 INT comp_cd
                 INT cust_id
-                INT fee_cat_id
-                VARCHAR name
-                DECIMAL base_fee
-            }
-            FEE_CAST_CATEGORY {
-                INT comp_cd
-                INT cust_id
-                INT fee_c_cat_id
-                VARCHAR name
-                DECIMAL scholarship_percentage
-            }
-            FEE_STRUCTURE {
-                INT fee_id
-                INT comp_cd
-                INT cust_id
-                INT course_id
-                INT batch_id
-                INT fee_c_cat_id
-                INT fee_cat_id
-                BIGINT total_fees
-                VARCHAR currency
-                ENUM frequency
-            }
-            STUDENT_FEES {
-                INT student_fee_id
-                INT comp_cd
-                INT cust_id
-                INT student_id
-                INT fee_id
-                DECIMAL original_fee
-                DECIMAL discount
-                DECIMAL scholarship
-                DECIMAL final_fee
-                ENUM payment_status
-                DATE due_date
-                DATE paid_date
+                BIGINT due_id
+                DECIMAL adjustment_amount
+                VARCHAR reason
+                INT approved_by
+                DATETIME approved_date
             }
             FEE_PENALTY {
-                INT penalty_id
+                BIGINT penalty_id
                 INT comp_cd
                 INT cust_id
-                INT section_id
-                ENUM penalty_type
-                DECIMAL amount
-                DECIMAL max_amount
+                BIGINT due_id
+                DECIMAL penalty_amount
+                DATETIME penalty_date
+                ENUM status
             }
             FEE_DUE {
-                INT due_id
+                BIGINT due_id
                 INT comp_cd
                 INT cust_id
-                INT student_id
-                INT fee_id
-                DECIMAL original_due
-                DECIMAL penalty_amount
-                DECIMAL total_due
-                DATE due_date
+                BIGINT student_id
+                DECIMAL due_amount
+                DATETIME due_date
                 ENUM status
+            }
+            STUDENT_FEES {
+                BIGINT fee_id
+                INT comp_cd
+                INT cust_id
+                BIGINT student_id
                 DECIMAL paid_amount
-                DATE payment_date
+                DATETIME payment_date
+                ENUM status
+            }
+            FEE_STRUCTURE {
+                BIGINT structure_id
+                INT comp_cd
+                INT cust_id
+                VARCHAR structure_name
+                DECIMAL amount
+                ENUM status
+            }
+            FEE_CATEGORY {
+                INT category_id
+                INT comp_cd
+                INT cust_id
+                VARCHAR category_name
+            }
+            CAST_WISE_FEE_CATEGORY {
+                INT cast_category_id
+                INT comp_cd
+                INT cust_id
+                VARCHAR cast_category_name
             }
     </div>
 </body>
