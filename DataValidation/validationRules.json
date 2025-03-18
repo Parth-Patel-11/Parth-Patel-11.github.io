@@ -102,12 +102,21 @@
 			}
 		]
 	},
-	"name": {
+	"first_name": {
 		"rules": [
 			{
-				"pattern": "^[A-Za-z ]{3,}$",
-				"message": "Name must be at least 3 characters long and contain only letters and spaces",
-				"error": "Invalid Name. It must be at least 3 characters long and contain only letters and spaces."
+				"pattern": "^[A-Za-z]{3,}$",
+				"message": "First name must be at least 3 characters long and contain only letters.",
+				"error": "Invalid First Name. It must be at least 3 characters long and contain only letters."
+			}
+		]
+	},
+	"last_name": {
+		"rules": [
+			{
+				"pattern": "^[A-Za-z]{3,}$",
+				"message": "Last name must be at least 3 characters long and contain only letters.",
+				"error": "Invalid Last Name. It must be at least 3 characters long and contain only letters."
 			}
 		]
 	},
@@ -157,7 +166,7 @@
 			}
 		]
 	},
-	"enr_year": {
+	"academic_year": {
 		"message": "Enrollment year must be a number greater than 0",
 		"rules": [
 			{
@@ -167,30 +176,39 @@
 			}
 		]
 	},
-	"class": {
+	"course_id": {
 		"rules": [
 			{
 				"pattern": "^[1-9][0-9]*$",
-				"message": "Class must be a positive number greater than 0",
-				"error": "Invalid Class. It must be a positive number greater than 0."
+				"message": "Course ID must be a positive integer.",
+				"error": "Invalid Course ID. It must be a positive integer."
 			}
 		]
 	},
-	"course": {
-		"rules": [
-			{
-				"pattern": "^[A-Za-z0-9 ]{3,}$",
-				"message": "Course name must be at least 3 characters long and contain only alphanumeric characters and spaces",
-				"error": "Invalid Course Name. It must be at least 3 characters long and contain only alphanumeric characters and spaces."
-			}
-		]
-	},
-	"course_duration": {
+	"section_id": {
 		"rules": [
 			{
 				"pattern": "^[1-9][0-9]*$",
-				"message": "Course duration must be a positive number greater than 0",
-				"error": "Invalid Course Duration. It must be a positive number greater than 0."
+				"message": "Section ID must be a positive integer.",
+				"error": "Invalid Section ID. It must be a positive integer."
+			}
+		]
+	},
+	"cast_cate_id": {
+		"rules": [
+			{
+				"pattern": "^[1-9][0-9]*$",
+				"message": "Caste Category ID must be a positive integer.",
+				"error": "Invalid Caste Category ID. It must be a positive integer."
+			}
+		]
+	},
+	"semester_id": {
+		"rules": [
+			{
+				"pattern": "^[1-9][0-9]*$",
+				"message": "Semester ID must be a positive integer.",
+				"error": "Invalid Semester ID. It must be a positive integer."
 			}
 		]
 	},
