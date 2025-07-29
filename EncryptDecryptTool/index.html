@@ -226,7 +226,6 @@
         document.getElementById("output").textContent = "❌ Decryption Error: " + err.message;
       }
     }
-
     async function process() {
       document.getElementById("output").textContent = "Processing...";
       await new Promise(r => setTimeout(r, 20));
@@ -234,7 +233,6 @@
       if (mode === "encrypt") await encrypt();
       else await decrypt();
     }
-
     updateMode();
   </script>
 </body>
