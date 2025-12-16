@@ -72,12 +72,39 @@
       }
 
 
-      #copyBtn {
-        margin-left: 10px;
-        padding: 4px 10px;
-        font-size: 12px;
-        cursor: pointer;
-      }
+      .output-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.output-title {
+  white-space: nowrap;
+}
+
+.output-divider {
+  flex: 1;
+  height: 1px;
+  background: #ddd;
+}
+
+#copyBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid #ccc;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+#copyBtn:hover {
+  background: #f5f5f5;
+}
 
       pre {
         background: #eee;
@@ -125,10 +152,14 @@
 
     <button onclick="process()">Run</button>
 
-    <h3>
-      Output:
-      <button id="copyBtn" onclick="copyOutput()">Copy</button>
-    </h3>
+    <div class="output-header">
+  <span class="output-title">Output</span>
+  <div class="output-divider"></div>
+  <button id="copyBtn" onclick="copyOutput()" title="Copy output">
+    📋 Copy
+  </button>
+</div>
+
 
     <pre id="output"></pre>
 
