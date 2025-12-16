@@ -71,6 +71,14 @@
         background: #0056b3;
       }
 
+
+      #copyBtn {
+        margin-left: 10px;
+        padding: 4px 10px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+
       pre {
         background: #eee;
         padding: 15px;
@@ -117,7 +125,11 @@
 
     <button onclick="process()">Run</button>
 
-    <h3>Output:</h3>
+    <h3>
+      Output:
+      <button id="copyBtn" onclick="copyOutput()">Copy</button>
+    </h3>
+
     <pre id="output"></pre>
 
     <script>
@@ -269,6 +281,25 @@
         else if (mode === "decrypt") await decrypt();
         else await convertFunTOString();
       }
+
+      function copyOutput() {
+    const outputText = document.getElementById("output").textContent;
+
+    if (!outputText) {
+      alert("Nothing to copy");
+      return;
+    }
+
+    navigator.clipboard.writeText(outputText)
+      .then(() => {
+        const btn = document.getElementById("copyBtn");
+        btn.textContent = "Copied!";
+        setTimeout(() => (btn.textContent = "Copy"), 1500);
+      })
+      .catch(() => {
+        alert("Failed to copy");
+      });
+  }
 
       updateMode();
     </script>
