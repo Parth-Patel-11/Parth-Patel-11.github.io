@@ -1,338 +1,363 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <title>Encrypt/Decrypt Tool</title>
     <script src="https://cdn.jsdelivr.net/npm/scrypt-async@1.3.0/scrypt-async.js"></script>
     <style>
-      body {
-        font-family: sans-serif;
-        max-width: 800px;
-        margin: 40px auto;
-        padding: 20px 30px;
-        background: #fdfdfd;
-        border-radius: 12px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-      }
+        body {
+            font-family: sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px 30px;
+            background: #fdfdfd;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
 
-      h2 {
-        text-align: center;
-      }
+        h2 {
+            text-align: center;
+        }
 
-      label {
-        display: block;
-        margin-top: 20px;
-        margin-bottom: 8px;
-        font-weight: bold;
-      }
+        label {
+            display: block;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
 
-      textarea,
-      input[type="text"],
-      select {
-        width: 100%;
-        padding: 12px;
-        font-size: 1rem;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        box-sizing: border-box;
-      }
+        textarea,
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
 
-      textarea {
-        resize: vertical;
-      }
+        textarea {
+            resize: vertical;
+        }
 
-      .checkbox-container {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        margin: 15px 0;
-        gap: 10px;
-      }
+        .checkbox-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin: 15px 0;
+            gap: 10px;
+        }
 
-      .checkbox-container label {
-        margin: 0;
-        font-weight: normal;
-      }
+        .checkbox-container label {
+            margin: 0;
+            font-weight: normal;
+        }
 
-      button {
-        padding: 12px 25px;
-        font-size: 1rem;
-        font-weight: bold;
-        margin-top: 15px;
-        cursor: pointer;
-        background: #007bff;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        width: 100%;
-      }
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            margin-top: 15px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 100%;
+        }
 
-      button:hover {
-        background: #0056b3;
-      }
+        button:hover {
+            background: #0056b3;
+        }
+
+        .output-header {
+            margin-top: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .output-title {
+            white-space: nowrap;
+        }
 
 
-      .output-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-  font-weight: 600;
-}
+        #copyBtn {
+            width: auto;
+            height: auto;
+            gap: 6px;
+            border: 1px solid #ccc;
+            padding: 4px 10px;
+            margin-top: 0px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            visibility: hidden;
+        }
 
-.output-title {
-  white-space: nowrap;
-}
+        #copyBtn:hover {
+            background: #0056b3;
+        }
 
-.output-divider {
-  flex: 1;
-  height: 1px;
-  background: #ddd;
-}
-
-#copyBtn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: transparent;
-  border: 1px solid #ccc;
-  padding: 4px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-#copyBtn:hover {
-  background: #f5f5f5;
-}
-
-      pre {
-        background: #eee;
-        padding: 15px;
-        border-radius: 8px;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        margin-top: 10px;
-      }
+        pre {
+            background: #eee;
+            padding: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-top: 10px;
+        }
     </style>
-  </head>
+</head>
 
-  <body>
+<body>
     <h2>🔒 Encrypt / Decrypt Tool</h2>
 
     <label for="mode">Select Mode:</label>
     <select id="mode" onchange="updateMode()">
-      <option value="encrypt">Encrypt</option>
-      <option value="decrypt">Decrypt</option>
-      <option value="stringifyJsCode">Stringify JS Code</option>
+        <option value="encrypt">Encrypt</option>
+        <option value="decrypt">Decrypt</option>
+        <option value="stringifyJsCode">Stringify JS Code</option>
     </select>
 
     <label id="inputLabel" for="textInput">Enter Plain Text to Encrypt:</label>
     <textarea id="textInput" rows="6" placeholder="Example: This is a secret message"></textarea>
 
     <div id="secret-key-container" style="flex: auto; display: flex; flex-direction: column">
-      <label for="password">Secret Key:</label>
-      <input type="text" id="password" placeholder="Enter your secret key..." />
+        <label for="password">Secret Key:</label>
+        <input type="text" id="password" placeholder="Enter your secret key..." />
     </div>
 
     <div class="checkbox-container" id="checkbox-container">
-      <input type="checkbox" id="isKeyBase64" />
-      <label for="isKeyBase64">Secret Key is Base64</label>
+        <input type="checkbox" id="isKeyBase64" />
+        <label for="isKeyBase64">Secret Key is Base64</label>
     </div>
 
     <div class="checkbox-container" id="output-format-container">
-      <input type="checkbox" id="outputAsBase64" checked />
-      <label for="outputAsBase64">Output in Base64 format</label>
+        <input type="checkbox" id="outputAsBase64" checked />
+        <label for="outputAsBase64">Output in Base64 format</label>
     </div>
 
     <div class="checkbox-container" id="decrypt-base64-container" style="display: none">
-      <input type="checkbox" id="isEncryptedBase64" />
-      <label for="isEncryptedBase64">Encrypted String is Base64</label>
+        <input type="checkbox" id="isEncryptedBase64" />
+        <label for="isEncryptedBase64">Encrypted String is Base64</label>
     </div>
 
     <button onclick="process()">Run</button>
 
     <div class="output-header">
-  <span class="output-title">Output</span>
-  <div class="output-divider"></div>
-  <button id="copyBtn" onclick="copyOutput()" title="Copy output">
-    📋 Copy
-  </button>
-</div>
-
+        <span class="output-title">Output</span>
+        <button id="copyBtn" onclick="copyOutput()" title="Copy output">📋 Copy</button>
+    </div>
 
     <pre id="output"></pre>
 
     <script>
-      function updateMode() {
-        const mode = document.getElementById("mode").value;
-        if (mode === "stringifyJsCode") {
-          document.getElementById("inputLabel").textContent = "Enter Js Code To Stringify";
-          document.getElementById("textInput").placeholder = `(function(data){return data;})(data)`;
+        function updateMode() {
+            const mode = document.getElementById("mode").value;
+            if (mode === "stringifyJsCode") {
+                document.getElementById("inputLabel").textContent = "Enter Js Code To Stringify";
+                document.getElementById("textInput").placeholder = `(function(data){return data;})(data)`;
 
-          document.getElementById("output-format-container").style.display = "none";
-          document.getElementById("decrypt-base64-container").style.display = "none";
-          document.getElementById("checkbox-container").style.display = "none";
-          document.getElementById("secret-key-container").style.display = "none";
-          document.getElementById("textInput").value = "";
-          document.getElementById("output").textContent = "";
-          document.getElementById("");
-        } else {
-          document.getElementById("inputLabel").textContent =
-            mode === "encrypt" ? "Enter Plain Text to Encrypt:" : "Enter Encrypted String (hex or Base64):";
-          document.getElementById("textInput").placeholder =
-            mode === "encrypt" ? "Example: This is a secret message" : "Example: 72af1e8e...:1f6c1a... OR ZTJmYj...MmYw==";
+                document.getElementById("output-format-container").style.display = "none";
+                document.getElementById("decrypt-base64-container").style.display = "none";
+                document.getElementById("checkbox-container").style.display = "none";
+                document.getElementById("secret-key-container").style.display = "none";
+                document.getElementById("textInput").value = "";
+                document.getElementById("output").textContent = "";
+                document.getElementById("");
+            } else {
+                document.getElementById("inputLabel").textContent =
+                    mode === "encrypt" ? "Enter Plain Text to Encrypt:" : "Enter Encrypted String (hex or Base64):";
+                document.getElementById("textInput").placeholder =
+                    mode === "encrypt" ? "Example: This is a secret message" : "Example: 72af1e8e...:1f6c1a... OR ZTJmYj...MmYw==";
 
-          document.getElementById("output-format-container").style.display = "flex";
-          document.getElementById("decrypt-base64-container").style.display = "flex";
-          document.getElementById("checkbox-container").style.display = "flex";
-          document.getElementById("secret-key-container").style.display = "flex";
+                document.getElementById("output-format-container").style.display = "flex";
+                document.getElementById("decrypt-base64-container").style.display = "flex";
+                document.getElementById("checkbox-container").style.display = "flex";
+                document.getElementById("secret-key-container").style.display = "flex";
 
-          document.getElementById("output-format-container").style.display = mode === "encrypt" ? "flex" : "none";
-          document.getElementById("decrypt-base64-container").style.display = mode === "decrypt" ? "flex" : "none";
-          document.getElementById("textInput").value = "";
-          document.getElementById("output").textContent = "";
+                document.getElementById("output-format-container").style.display = mode === "encrypt" ? "flex" : "none";
+                document.getElementById("decrypt-base64-container").style.display = mode === "decrypt" ? "flex" : "none";
+                document.getElementById("textInput").value = "";
+                document.getElementById("output").textContent = "";
+            }
         }
-      }
 
-      function hex(bytes) {
-        return Array.from(bytes)
-          .map((b) => b.toString(16).padStart(2, "0"))
-          .join("");
-      }
-
-      function fromHex(hexStr) {
-        return Uint8Array.from(hexStr.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
-      }
-
-      async function encrypt() {
-        try {
-          const plainText = document.getElementById("textInput").value.trim();
-          const password = document.getElementById("password").value.trim();
-          const isKeyBase64 = document.getElementById("isKeyBase64").checked;
-          const outputAsBase64 = document.getElementById("outputAsBase64").checked;
-
-          if (!plainText || !password) throw new Error("Text and Secret Key must not be empty.");
-
-          const secret = isKeyBase64 ? atob(password) : password;
-
-          const keyBytes = await new Promise((resolve) => {
-            scrypt(
-              secret,
-              "salt",
-              {
-                N: 16384,
-                r: 8,
-                p: 1,
-                dkLen: 32,
-                encoding: "binary",
-              },
-              (dk) => resolve(new Uint8Array(dk))
-            );
-          });
-
-          const iv = crypto.getRandomValues(new Uint8Array(16));
-          const data = new TextEncoder().encode(plainText);
-
-          const cryptoKey = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-CBC" }, false, ["encrypt"]);
-
-          const encrypted = await crypto.subtle.encrypt({ name: "AES-CBC", iv }, cryptoKey, data);
-
-          const encryptedHex = hex(new Uint8Array(encrypted));
-          const payload = `${hex(iv)}:${encryptedHex}`;
-          const output = outputAsBase64 ? btoa(payload) : payload;
-
-          document.getElementById("output").textContent = output;
-        } catch (err) {
-          console.error("Encryption Error =>", err);
-          document.getElementById("output").textContent = "❌ Encryption Error: " + err.message;
+        function hex(bytes) {
+            return Array.from(bytes)
+                .map((b) => b.toString(16).padStart(2, "0"))
+                .join("");
         }
-      }
 
-      async function decrypt() {
-        try {
-          const inputRaw = document.getElementById("textInput").value.trim();
-          const password = document.getElementById("password").value.trim();
-          const isKeyBase64 = document.getElementById("isKeyBase64").checked;
-          const isEncryptedBase64 = document.getElementById("isEncryptedBase64").checked;
-
-          if (!inputRaw || !password) throw new Error("Encrypted string and Secret Key must not be empty.");
-
-          const encryptedString = isEncryptedBase64 ? atob(inputRaw) : inputRaw;
-          const [ivHex, encryptedHex] = encryptedString.split(":");
-
-          if (!ivHex || !encryptedHex) throw new Error("Invalid format. Expected 'iv:encrypted'");
-
-          const iv = fromHex(ivHex);
-          const encryptedBytes = fromHex(encryptedHex);
-          const secret = isKeyBase64 ? atob(password) : password;
-
-          const keyBytes = await new Promise((resolve) => {
-            scrypt(
-              secret,
-              "salt",
-              {
-                N: 16384,
-                r: 8,
-                p: 1,
-                dkLen: 32,
-                encoding: "binary",
-              },
-              (dk) => resolve(new Uint8Array(dk))
-            );
-          });
-
-          const cryptoKey = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-CBC" }, false, ["decrypt"]);
-
-          const decryptedBuffer = await crypto.subtle.decrypt({ name: "AES-CBC", iv }, cryptoKey, encryptedBytes);
-          const result = new TextDecoder().decode(decryptedBuffer);
-
-          try {
-            const parsed = JSON.parse(result);
-            document.getElementById("output").textContent = JSON.stringify(parsed, null, 2);
-          } catch (e) {
-            document.getElementById("output").textContent = result;
-          }
-        } catch (err) {
-          console.error("Decryption Error =>", err);
-          document.getElementById("output").textContent = "❌ Decryption Error: " + err.message;
+        function fromHex(hexStr) {
+            return Uint8Array.from(hexStr.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
         }
-      }
 
-      function convertFunTOString() {
-        const script = document.getElementById("textInput").value.trim();
-        document.getElementById("output").textContent = String(script).replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "");
-      }
+        async function encrypt() {
+            try {
+                const plainText = document.getElementById("textInput").value.trim();
+                const password = document.getElementById("password").value.trim();
+                const isKeyBase64 = document.getElementById("isKeyBase64").checked;
+                const outputAsBase64 = document.getElementById("outputAsBase64").checked;
 
-      async function process() {
-        document.getElementById("output").textContent = "Processing...";
-        await new Promise((r) => setTimeout(r, 20));
-        const mode = document.getElementById("mode").value;
-        if (mode === "encrypt") await encrypt();
-        else if (mode === "decrypt") await decrypt();
-        else await convertFunTOString();
-      }
+                if (!plainText || !password) throw new Error("Text and Secret Key must not be empty.");
 
-      function copyOutput() {
-    const outputText = document.getElementById("output").textContent;
+                const secret = isKeyBase64 ? atob(password) : password;
 
-    if (!outputText) {
-      alert("Nothing to copy");
-      return;
-    }
+                const keyBytes = await new Promise((resolve) => {
+                    scrypt(
+                        secret,
+                        "salt",
+                        {
+                            N: 16384,
+                            r: 8,
+                            p: 1,
+                            dkLen: 32,
+                            encoding: "binary",
+                        },
+                        (dk) => resolve(new Uint8Array(dk))
+                    );
+                });
 
-    navigator.clipboard.writeText(outputText)
-      .then(() => {
-        const btn = document.getElementById("copyBtn");
-        btn.textContent = "Copied!";
-        setTimeout(() => (btn.textContent = "Copy"), 1500);
-      })
-      .catch(() => {
-        alert("Failed to copy");
-      });
-  }
+                const iv = crypto.getRandomValues(new Uint8Array(16));
+                const data = new TextEncoder().encode(plainText);
 
-      updateMode();
+                const cryptoKey = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-CBC" }, false, ["encrypt"]);
+
+                const encrypted = await crypto.subtle.encrypt({ name: "AES-CBC", iv }, cryptoKey, data);
+
+                const encryptedHex = hex(new Uint8Array(encrypted));
+                const payload = `${hex(iv)}:${encryptedHex}`;
+                const output = outputAsBase64 ? btoa(payload) : payload;
+
+                document.getElementById("output").textContent = output;
+            } catch (err) {
+                console.error("Encryption Error =>", err);
+                document.getElementById("output").textContent = "❌ Encryption Error: " + err.message;
+            }
+        }
+
+        async function decrypt() {
+            try {
+                const inputRaw = document.getElementById("textInput").value.trim();
+                const password = document.getElementById("password").value.trim();
+                const isKeyBase64 = document.getElementById("isKeyBase64").checked;
+                const isEncryptedBase64 = document.getElementById("isEncryptedBase64").checked;
+
+                if (!inputRaw || !password) throw new Error("Encrypted string and Secret Key must not be empty.");
+
+                const encryptedString = isEncryptedBase64 ? atob(inputRaw) : inputRaw;
+                const [ivHex, encryptedHex] = encryptedString.split(":");
+
+                if (!ivHex || !encryptedHex) throw new Error("Invalid format. Expected 'iv:encrypted'");
+
+                const iv = fromHex(ivHex);
+                const encryptedBytes = fromHex(encryptedHex);
+                const secret = isKeyBase64 ? atob(password) : password;
+
+                const keyBytes = await new Promise((resolve) => {
+                    scrypt(
+                        secret,
+                        "salt",
+                        {
+                            N: 16384,
+                            r: 8,
+                            p: 1,
+                            dkLen: 32,
+                            encoding: "binary",
+                        },
+                        (dk) => resolve(new Uint8Array(dk))
+                    );
+                });
+
+                const cryptoKey = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-CBC" }, false, ["decrypt"]);
+
+                const decryptedBuffer = await crypto.subtle.decrypt({ name: "AES-CBC", iv }, cryptoKey, encryptedBytes);
+                const result = new TextDecoder().decode(decryptedBuffer);
+
+                try {
+                    const parsed = JSON.parse(result);
+                    document.getElementById("output").textContent = JSON.stringify(parsed, null, 2);
+                } catch (e) {
+                    document.getElementById("output").textContent = result;
+                }
+            } catch (err) {
+                console.error("Decryption Error =>", err);
+                document.getElementById("output").textContent = "❌ Decryption Error: " + err.message;
+            }
+        }
+
+        function convertFunTOString() {
+            const script = document.getElementById("textInput").value.trim();
+            document.getElementById("output").textContent = String(script).replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "");
+        }
+
+        async function process() {
+            const outputEl = document.getElementById("output");
+            const copyBtn = document.getElementById("copyBtn");
+            const script = document.getElementById("textInput").value.trim();
+            const mode = document.getElementById("mode").value;
+            
+            if (!script) {
+                alert("Input cannot be empty");
+                return;
+            }
+
+            if (mode === "decrypt" || mode === "encrypt") {
+                const password = document.getElementById("password").value.trim();
+                if (!password) {
+                    alert("Secret Key cannot be empty");
+                    return;
+                }
+            }
+
+            // Reset state
+            outputEl.textContent = "Processing...";
+            copyBtn.style.visibility = "hidden";
+            await new Promise((r) => setTimeout(r, 20));
+
+            if (mode === "encrypt") {
+                await encrypt();
+            } else if (mode === "decrypt") {
+                await decrypt();
+            } else {
+                await convertFunTOString();
+            }
+
+            if (outputEl.textContent && outputEl.textContent !== "Processing...") {
+                copyBtn.style.visibility = "visible";
+            }
+        }
+
+
+        function copyOutput() {
+            const outputText = document.getElementById("output").textContent;
+
+            if (!outputText) {
+                alert("Nothing to copy");
+                return;
+            }
+
+            navigator.clipboard
+                .writeText(outputText)
+                .then(() => {
+                    const btn = document.getElementById("copyBtn");
+                    btn.textContent = "Copied!";
+                    setTimeout(() => (btn.textContent = "📋 Copy"), 1500);
+                })
+                .catch(() => {
+                    alert("Failed to copy");
+                });
+        }
+
+        updateMode();
     </script>
-  </body>
+</body>
+
 </html>
