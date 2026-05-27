@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>JSON JS Editor</title>
+
+  <!-- CodeMirror -->
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+
+  <!-- Prettier -->
+  <script src="https://unpkg.com/prettier@3.3.3/standalone.js"></script>
+  <script src="https://unpkg.com/prettier@3.3.3/plugins/babel.js"></script>
+  <script src="https://unpkg.com/prettier@3.3.3/plugins/estree.js"></script>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      background: #0f172a;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .top {
+      padding: 12px;
+      background: #111827;
+      border-bottom: 1px solid #1f2937;
+    }
+
+    textarea {
+      width: 100%;
+      height: 170px;
+      background: #020617;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 12px;
+      resize: vertical;
+      font-family: monospace;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .buttons {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    button {
+      border: none;
+      background: #2563eb;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #1f2937;
+    }
+
+    .panel:last-child {
+      border-right: none;
+    }
+
+    .title {
+      padding: 10px;
+      background: #111827;
+      border-bottom: 1px solid #1f2937;
+      font-weight: bold;
+    }
+
+    .CodeMirror {
+      height: 100%;
+      font-size: 14px;
+    }
+
+    #output {
+      width: 100%;
+      height: 100%;
+      background: #020617;
+      color: #e2e8f0;
+      border: none;
+      outline: none;
+      padding: 12px;
+      resize: none;
+      font-family: monospace;
+      font-size: 13px;
+    }
+
+    .status {
+      padding: 10px;
+      background: #111827;
+      border-top: 1px solid #1f2937;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    .success {
+      color: #22c55e;
+    }
+
+    .error {
+      color: #ef4444;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="top">
+
+    <h3>Paste JSON</h3>
+
+    <textarea id="jsonInput"
+placeholder='{
+  "options": "return (async function(){ const a = 1; return a; })();"
+}'></textarea>
+
+    <div class="buttons">
+
+      <button id="loadBtn">
+        Load JSON
+      </button>
+
+      <button id="formatBtn">
+        Format JS
+      </button>
+
+      <button id="minifyBtn">
+        Minify JS
+      </button>
+
+      <button id="generateBtn">
+        Generate JSON
+      </button>
+
+      <button id="copyBtn">
+        Copy Output
+      </button>
+
+      <button id="clearBtn">
+        Clear
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="main">
+
+    <div class="panel">
+
+      <div class="title">
+        JavaScript Editor
+      </div>
+
+      <textarea id="editor"></textarea>
+
+    </div>
+
+    <div class="panel">
+
+      <div class="title">
+        Generated JSON
+      </div>
+
+      <textarea id="output"></textarea>
+
+    </div>
+
+  </div>
+
+  <div class="status" id="status">
+    Ready
+  </div>
+
+</div>
+
+<script>
+
+  // CODEMIRROR
+
+  const jsEditor = CodeMirror.fromTextArea(
+    document.getElementById("editor"),
+    {
+      mode: "javascript",
+      theme: "material-darker",
+      lineNumbers: true,
+      lineWrapping: true
+    }
+  );
+
+  // STATUS
+
+  function setStatus(message, type = "") {
+
+    const el =
+      document.getElementById("status");
+
+    el.className = "status";
+
+    if (type) {
+      el.classList.add(type);
+    }
+
+    el.innerText = message;
+  }
+
+  // FIND STRING RECURSIVELY
+
+  function findString(obj) {
+
+    if (typeof obj === "string") {
+      return obj;
+    }
+
+    if (
+      typeof obj === "object" &&
+      obj !== null
+    ) {
+
+      for (const key in obj) {
+
+        const result =
+          findString(obj[key]);
+
+        if (result) {
+          return result;
+        }
+
+      }
+
+    }
+
+    return null;
+  }
+
+  // LOAD JSON
+
+  document
+    .getElementById("loadBtn")
+    .addEventListener("click", () => {
+
+      try {
+
+        const input =
+          document
+            .getElementById("jsonInput")
+            .value
+            .trim();
+
+        if (!input) {
+
+          setStatus(
+            "Please paste JSON",
+            "error"
+          );
+
+          return;
+        }
+
+        const parsed =
+          JSON.parse(input);
+
+        const code =
+          findString(parsed);
+
+        if (!code) {
+
+          setStatus(
+            "No JS string found",
+            "error"
+          );
+
+          return;
+        }
+
+        jsEditor.setValue(code);
+
+        setStatus(
+          "JSON Loaded",
+          "success"
+        );
+
+      } catch (err) {
+
+        console.error(err);
+
+        setStatus(
+          "Invalid JSON: " + err.message,
+          "error"
+        );
+
+      }
+
+    });
+
+  // FORMAT JS
+
+  document
+    .getElementById("formatBtn")
+    .addEventListener("click", async () => {
+
+      try {
+
+        const code =
+          jsEditor.getValue();
+
+        const formatted =
+          await prettier.format(code, {
+            parser: "babel",
+            plugins: prettierPlugins
+          });
+
+        jsEditor.setValue(formatted);
+
+        setStatus(
+          "JS Formatted",
+          "success"
+        );
+
+      } catch (err) {
+
+        console.error(err);
+
+        setStatus(
+          "Format Error: " + err.message,
+          "error"
+        );
+
+      }
+
+    });
+
+  // MINIFY
+
+  document
+    .getElementById("minifyBtn")
+    .addEventListener("click", () => {
+
+      try {
+
+        const code =
+          jsEditor.getValue();
+
+        const minified =
+          code
+            .replace(/\n/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+
+        jsEditor.setValue(minified);
+
+        setStatus(
+          "JS Minified",
+          "success"
+        );
+
+      } catch (err) {
+
+        console.error(err);
+
+        setStatus(
+          "Minify Failed",
+          "error"
+        );
+
+      }
+
+    });
+
+  // GENERATE JSON
+
+  document
+    .getElementById("generateBtn")
+    .addEventListener("click", () => {
+
+      try {
+
+        const code =
+          jsEditor.getValue();
+
+        const json = {
+          options: code
+        };
+
+        document
+          .getElementById("output")
+          .value =
+            JSON.stringify(
+              json,
+              null,
+              2
+            );
+
+        setStatus(
+          "JSON Generated",
+          "success"
+        );
+
+      } catch (err) {
+
+        console.error(err);
+
+        setStatus(
+          "Generate Failed",
+          "error"
+        );
+
+      }
+
+    });
+
+  // COPY
+
+  document
+    .getElementById("copyBtn")
+    .addEventListener("click", async () => {
+
+      try {
+
+        const output =
+          document
+            .getElementById("output")
+            .value;
+
+        if (!output.trim()) {
+
+          setStatus(
+            "Nothing to copy",
+            "error"
+          );
+
+          return;
+        }
+
+        await navigator
+          .clipboard
+          .writeText(output);
+
+        setStatus(
+          "Copied",
+          "success"
+        );
+
+      } catch (err) {
+
+        console.error(err);
+
+        setStatus(
+          "Copy Failed",
+          "error"
+        );
+
+      }
+
+    });
+
+  // CLEAR
+
+  document
+    .getElementById("clearBtn")
+    .addEventListener("click", () => {
+
+      document
+        .getElementById("jsonInput")
+        .value = "";
+
+      document
+        .getElementById("output")
+        .value = "";
+
+      jsEditor.setValue("");
+
+      setStatus(
+        "Cleared",
+        "success"
+      );
+
+    });
+
+</script>
+
+</body>
+</html>
