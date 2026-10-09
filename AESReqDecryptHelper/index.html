@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AES Request Decrypt Helper</title>
+<style>
+  :root{
+    --bg:#0f1420; --panel:#171e2e; --panel2:#1d2639; --border:#2b3650;
+    --txt:#e6ecf7; --muted:#8a96b0; --accent:#4f8cff; --accent2:#2bd4a0;
+    --warn:#ffb347; --err:#ff6b6b; --ok:#2bd4a0; --mono:ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px 18px 80px}
+  h1{font-size:22px;margin:0 0 4px}
+  .sub{color:var(--muted);font-size:13px;margin:0 0 20px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:18px}
+  .card h2{font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 12px}
+  label{display:block;font-size:12px;color:var(--muted);margin:10px 0 4px}
+  textarea,input,select{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--txt);
+    border-radius:8px;padding:10px;font-family:var(--mono);font-size:12.5px;resize:vertical}
+  textarea{min-height:90px}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .row>div{flex:1;min-width:220px}
+  button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:10px 16px;font-size:13px;
+    font-weight:600;cursor:pointer;margin-top:12px}
+  button.sec{background:var(--panel2);border:1px solid var(--border)}
+  button:hover{filter:brightness(1.1)}
+  .grid{display:grid;grid-template-columns:150px 1fr;gap:6px 12px;font-family:var(--mono);font-size:12px}
+  .grid .k{color:var(--muted)}
+  .grid .v{word-break:break-all;color:var(--txt)}
+  .badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:6px}
+  .b-ok{background:rgba(43,212,160,.15);color:var(--ok)}
+  .b-warn{background:rgba(255,179,71,.15);color:var(--warn)}
+  .b-err{background:rgba(255,107,107,.15);color:var(--err)}
+  pre{background:#0b0f18;border:1px solid var(--border);border-radius:8px;padding:12px;overflow:auto;
+    font-family:var(--mono);font-size:12.5px;white-space:pre-wrap;word-break:break-word;max-height:400px}
+  .status{font-size:12.5px;margin-top:8px;min-height:18px}
+  .note{background:rgba(79,140,255,.08);border:1px solid rgba(79,140,255,.3);border-radius:8px;
+    padding:12px;font-size:12.5px;color:#c8d6f5;margin-bottom:16px}
+  .note b{color:#fff}
+  details{margin-top:8px}
+  summary{cursor:pointer;color:var(--accent);font-size:12.5px}
+  .small{font-size:11.5px;color:var(--muted);margin-top:4px}
+  code{background:#0b0f18;padding:1px 5px;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>AES Request Decrypt Helper</h1>
+  <p class="sub">A generic debugging tool for apps that use hybrid RSA+AES encryption on requests/responses. Capture a request → auto-scrape crypto fields → decrypt the request &amp; response bodies (AES-GCM / AES-CBC). Everything runs 100% locally in your browser.</p>
+
+  <div class="note">
+    <b>How this pattern works:</b> many apps generate a random <b>AES key</b> per request, encrypt the body with it (IV sent in a header such as <code>x-iv</code>), then wrap that AES key with the server's <b>RSA public key</b> into a header such as <code>x-encrypted-key</code>. The RSA-wrapped key can only be opened by the server's private key — so to decrypt locally you need the <b>plaintext AES key</b> from the app's memory. The one-time hook below captures it for you.
+  </div>
+
+  <!-- STEP 1 : SETUP -->
+  <div class="card">
+    <h2>1 · Setup</h2>
+    <p class="small" style="margin-top:0">Get the target app and your tooling ready before anything else.</p>
+    <ol style="font-size:12.5px;color:#c8d6f5;padding-left:18px;margin:10px 0">
+      <li>Open the target app and log in (use only apps/accounts you own).</li>
+      <li>For a <b>persistent</b> hook, install the <a href="https://www.tampermonkey.net/" target="_blank" style="color:var(--accent)">Tampermonkey</a> extension. For a <b>quick/temporary</b> hook, you'll just use the browser Console (F12) — no install needed.</li>
+      <li>Open DevTools (F12) → <b>Console</b>, and check the crypto lib: type <code>typeof CryptoJS</code>. <code>"undefined"</code> = WebCrypto (this tool's hook/sniffer fit). <code>"object"</code> = the app uses CryptoJS and needs a different hook.</li>
+    </ol>
+  </div>
+
+  <!-- STEP 2 : HOOK -->
+  <div class="card">
+    <h2>2 · Auto-header hook script</h2>
+    <p class="small" style="margin-top:0">Install this <b>before</b> capturing any request. It grabs each request's AES key and attaches it as an <code>x-debug-key</code> header, so the copied request already contains the key and step 3 auto-fills it.</p>
+    <ol style="font-size:12.5px;color:#c8d6f5;padding-left:18px;margin:10px 0">
+      <li><b>Persistent:</b> Tampermonkey → New script → paste → edit the <code>@match</code> line to your target site → save → reload the app.</li>
+      <li><b>Quick/temporary:</b> paste into the Console, Enter. Works until you reload.</li>
+      <li>Verify: after one request, run <code>window.__DBG_AES_KEY</code> in the Console — it should print a base64 key.</li>
+    </ol>
+    <label>One-time hook (Tampermonkey userscript / console snippet)</label>
+    <textarea id="hook" readonly style="min-height:210px"></textarea>
+    <button onclick="copyHook()">Copy hook</button>
+    <span id="hookCopied" class="status" style="display:inline-block;margin-left:10px"></span>
+    <div class="small" style="margin-top:8px">⚠ <code>x-debug-key</code> exposes the plaintext key in your own captured requests — a debugging aid. Use it only on apps/accounts you own, keep captures private, and remove the hook when done.</div>
+  </div>
+
+  <!-- STEP 3 : CAPTURE & SCRAPE -->
+  <div class="card">
+    <h2>3 · Capture a request &amp; scrape keys</h2>
+    <p class="small" style="margin-top:0">With the hook active, use the app, then in the <b>Network</b> tab right-click the API call → <b>Copy → Copy as fetch</b>, and paste it below.</p>
+    <textarea id="rawHeaders" placeholder='Paste the copied fetch(...) snippet or a raw header block here...'></textarea>
+    <button onclick="scrape()">Scrape keys</button>
+    <button class="sec" onclick="loadSample()">Load demo</button>
+    <div id="scrapeStatus" class="status"></div>
+    <div id="scraped" style="margin-top:12px"></div>
+    <div class="small" style="margin-top:8px">Header names are configurable below if your app uses different ones.</div>
+    <div class="row" style="margin-top:4px">
+      <div><label>IV header name</label><input id="hdrIv" value="x-iv"></div>
+      <div><label>Wrapped-key header name</label><input id="hdrEncKey" value="x-encrypted-key"></div>
+      <div><label>Plaintext-key header name</label><input id="hdrDbgKey" value="x-debug-key"></div>
+    </div>
+
+    <details style="margin-top:14px">
+      <summary>Fallback: grab the key live from the Console (if the hook didn't populate the key header)</summary>
+      <p class="small">This just <b>logs</b> the key to the Console; copy it into step 4 manually.</p>
+      <ol style="font-size:12.5px;color:#c8d6f5;padding-left:18px;margin:10px 0">
+        <li>App open → F12 → Console. Check the lib: <code>typeof CryptoJS</code> (<code>"undefined"</code> = use this WebCrypto sniffer; <code>"object"</code> = the app uses CryptoJS, which needs a different sniffer).</li>
+        <li>Paste the sniffer, Enter, then do an action that loads data.</li>
+        <li>Console prints <code>AES KEY (b64): ...</code> and <code>iv(b64): ...</code> — copy the key into step 4.</li>
+      </ol>
+      <label>Console sniffer snippet (WebCrypto)</label>
+      <textarea id="sniffer" readonly style="min-height:150px"></textarea>
+      <button onclick="copySniffer()">Copy sniffer</button>
+      <span id="snifCopied" class="status" style="display:inline-block;margin-left:10px"></span>
+    </details>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="card">
+    <h2>4 · AES key &amp; parameters</h2>
+    <div class="row">
+      <div>
+        <label>Plaintext AES key (base64 or hex — auto-detected)</label>
+        <input id="aesKey" placeholder="e.g. base64 32-byte key or 64 hex chars">
+        <div class="small">16 / 24 / 32 bytes = AES-128 / 192 / 256</div>
+      </div>
+      <div>
+        <label>IV / nonce (base64 — auto-filled from the IV header)</label>
+        <input id="iv" placeholder="IV / nonce value">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Cipher mode</label>
+        <select id="mode">
+          <option value="auto">Auto (try GCM then CBC)</option>
+          <option value="gcm">AES-GCM (tag appended to ciphertext)</option>
+          <option value="cbc">AES-CBC (PKCS7)</option>
+        </select>
+      </div>
+      <div>
+        <label>Ciphertext / key encoding</label>
+        <select id="ctEnc">
+          <option value="base64">Base64</option>
+          <option value="hex">Hex</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="card">
+    <h2>5 · Decrypt body</h2>
+    <label>Request body (encrypted) — optional</label>
+    <textarea id="reqBody" placeholder="encrypted request body (the POST/PUT payload)"></textarea>
+    <button onclick="decryptField('reqBody','reqOut')">Decrypt request body</button>
+    <div id="reqStatus" class="status"></div>
+    <pre id="reqOut" style="display:none"></pre>
+
+    <label style="margin-top:18px">Response body (encrypted)</label>
+    <textarea id="respBody" placeholder="paste the encrypted response string here"></textarea>
+    <button onclick="decryptField('respBody','respOut')">Decrypt response body</button>
+    <div id="respStatus" class="status"></div>
+    <pre id="respOut" style="display:none"></pre>
+  </div>
+</div>
+
+<script>
+/* ---------- one-time request hook (userscript / console) ---------- */
+const HOOK=`// ==UserScript==
+// @name         AES key injector (debug)
+// @namespace    aes-decrypt-helper
+// @match        *://*/*          /* <-- narrow this to your target site, e.g. https://app.example.com/* */
+// @run-at       document-start
+// @grant        none
+// ==/UserScript==
+(() => {
+  const toB64 = b => btoa(String.fromCharCode(...new Uint8Array(b)));
+  const e = crypto.subtle.exportKey.bind(crypto.subtle);
+  const origGen = crypto.subtle.generateKey.bind(crypto.subtle);
+  const origImp = crypto.subtle.importKey.bind(crypto.subtle);
+  const origEnc = crypto.subtle.encrypt.bind(crypto.subtle);
+  const isAES = a => (a && (a.name || a)).toString().includes('AES');
+  const stash = async k => { try { window.__DBG_AES_KEY = toB64(await e('raw', k)); } catch (_) {} };
+
+  // force AES keys extractable and capture them as they are created
+  crypto.subtle.generateKey = async (algo, ext, usages) => {
+    const k = await origGen(algo, isAES(algo) ? true : ext, usages);
+    if (isAES(algo)) await stash(k.key || k);
+    return k;
+  };
+  crypto.subtle.importKey = async (fmt, data, algo, ext, usages) => {
+    const k = await origImp(fmt, data, algo, isAES(algo) ? true : ext, usages);
+    if (isAES(algo)) await stash(k);
+    return k;
+  };
+  // fallback: capture at encrypt time (only if the key is extractable)
+  crypto.subtle.encrypt = async (algo, key, data) => {
+    if (isAES(algo) && !window.__DBG_AES_KEY) await stash(key);
+    return origEnc(algo, key, data);
+  };
+
+  // attach the captured key as x-debug-key on outgoing requests
+  const origFetch = window.fetch.bind(window);
+  window.fetch = (input, init = {}) => {
+    try {
+      if (window.__DBG_AES_KEY) {
+        const h = new Headers((init && init.headers) || (input instanceof Request ? input.headers : undefined));
+        h.set('x-debug-key', window.__DBG_AES_KEY);
+        init = { ...init, headers: h };
+      }
+    } catch (_) {}
+    return origFetch(input, init);
+  };
+  const origOpen = XMLHttpRequest.prototype.open;
+  const origSend = XMLHttpRequest.prototype.send;
+  XMLHttpRequest.prototype.open = function (...a) { this.__dbg = true; return origOpen.apply(this, a); };
+  XMLHttpRequest.prototype.send = function (...a) {
+    try { if (this.__dbg && window.__DBG_AES_KEY) this.setRequestHeader('x-debug-key', window.__DBG_AES_KEY); } catch (_) {}
+    return origSend.apply(this, a);
+  };
+
+  console.log('%cok hook active - requests now carry x-debug-key', 'color:#2bd4a0;font-weight:bold');
+})();`;
+function copyHook(){
+  navigator.clipboard.writeText(HOOK).then(()=>{
+    document.getElementById('hookCopied').innerHTML='<span class="b-ok badge">Copied</span>';
+    setTimeout(()=>document.getElementById('hookCopied').innerHTML='',3000);
+  }).catch(()=>{
+    const t=document.getElementById('hook');t.focus();t.select();
+    document.getElementById('hookCopied').innerHTML='<span class="b-warn badge">Select+Ctrl+C manually</span>';
+  });
+}
+
+/* ---------- console sniffer snippet ---------- */
+const SNIFFER=`(() => {
+  const g = crypto.subtle.generateKey.bind(crypto.subtle);
+  const e = crypto.subtle.exportKey.bind(crypto.subtle);
+  const enc = crypto.subtle.encrypt.bind(crypto.subtle);
+  crypto.subtle.generateKey = async (a, x, u) => {
+    const k = await g(a, true, u);
+    try { if ((a.name||a).includes('AES')) {
+      const r = await e('raw', k.key||k);
+      console.log('%cAES KEY (b64):','color:#2bd4a0;font-weight:bold',
+        btoa(String.fromCharCode(...new Uint8Array(r))));
+    }} catch(_) {}
+    return k;
+  };
+  crypto.subtle.encrypt = async (a, key, d) => {
+    try { const r = await e('raw', key);
+      console.log('%cENC key(b64):','color:#4f8cff',
+        btoa(String.fromCharCode(...new Uint8Array(r))),
+        '| iv(b64):', a.iv ? btoa(String.fromCharCode(...new Uint8Array(a.iv))) : '-');
+    } catch(_) {}
+    return enc(a, key, d);
+  };
+  console.log('sniffer active - now click something in the app');
+})();`;
+function copySniffer(){
+  navigator.clipboard.writeText(SNIFFER).then(()=>{
+    document.getElementById('snifCopied').innerHTML='<span class="b-ok badge">Copied — paste in Console</span>';
+    setTimeout(()=>document.getElementById('snifCopied').innerHTML='',3000);
+  }).catch(()=>{
+    const t=document.getElementById('sniffer');t.focus();t.select();
+    document.getElementById('snifCopied').innerHTML='<span class="b-warn badge">Select+Ctrl+C manually</span>';
+  });
+}
+
+/* ---------- encoding helpers ---------- */
+function b64ToBytes(s){s=s.trim().replace(/\s+/g,'');const bin=atob(s);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return a;}
+function hexToBytes(s){s=s.trim().replace(/[^0-9a-fA-F]/g,'');const a=new Uint8Array(s.length/2);for(let i=0;i<a.length;i++)a[i]=parseInt(s.substr(i*2,2),16);return a;}
+function looksHex(s){s=s.trim();return /^[0-9a-fA-F\s]+$/.test(s)&&s.replace(/\s/g,'').length%2===0;}
+function autoBytes(s){s=s.trim();if(looksHex(s)&&!/[g-zG-Z+/=]/.test(s))return hexToBytes(s);try{return b64ToBytes(s);}catch(e){return hexToBytes(s);}}
+function encBytes(s,enc){return enc==='hex'?hexToBytes(s):b64ToBytes(s);}
+function bytesToText(a){return new TextDecoder().decode(a);}
+function prettyJSON(t){try{return JSON.stringify(JSON.parse(t),null,2);}catch(e){return t;}}
+
+/* ---------- scrape headers from pasted fetch/raw block ---------- */
+function scrape(){
+  const raw=document.getElementById('rawHeaders').value;
+  const st=document.getElementById('scrapeStatus');
+  if(!raw.trim()){st.innerHTML='<span class="b-err badge">Nothing pasted</span>';return;}
+  const hIv=(document.getElementById('hdrIv').value||'x-iv').trim().toLowerCase();
+  const hEnc=(document.getElementById('hdrEncKey').value||'x-encrypted-key').trim().toLowerCase();
+  const hDbg=(document.getElementById('hdrDbgKey').value||'x-debug-key').trim().toLowerCase();
+  const fields={};
+  const want=[hIv,hEnc,hDbg,'authorization','x-key'];
+  want.forEach(k=>{
+    let re=new RegExp('["\']?'+k.replace(/[-]/g,'\\-')+'["\']?\\s*[:]\\s*["\']([^"\']+)["\']','i');
+    let m=raw.match(re);
+    if(!m){re=new RegExp('^'+k.replace(/[-]/g,'\\-')+'\\s*:\\s*(.+)$','im');m=raw.match(re);}
+    if(m)fields[k]=m[1].trim();
+  });
+  const url=(raw.match(/fetch\(\s*["']([^"']+)["']/i)||raw.match(/(https?:\/\/[^\s"']+)/))?.[1];
+  const method=(raw.match(/["']?method["']?\s*:\s*["']([A-Z]+)["']/i))?.[1];
+
+  if(fields[hIv])document.getElementById('iv').value=fields[hIv];
+  const injected=fields[hDbg]||fields['x-key'];
+  if(injected)document.getElementById('aesKey').value=injected;
+
+  let rows='';
+  const show=(k,v,note)=>{rows+=`<div class="k">${k}</div><div class="v">${v||'<span class="b-warn badge">not found</span>'}${note||''}</div>`;};
+  show('URL',url);
+  show('Method',method||'GET');
+  show(hIv,fields[hIv],fields[hIv]?ivBadge(fields[hIv]):'');
+  show(hEnc,fields[hEnc],fields[hEnc]?keyBadge(fields[hEnc]):'');
+  show('authorization',fields['authorization']?jwtInfo(fields['authorization']):'');
+  show(hDbg+' (hook)',fields[hDbg],fields[hDbg]?'<span class="b-ok badge">auto-filled as AES key ✓</span>':'');
+  document.getElementById('scraped').innerHTML='<div class="grid">'+rows+'</div>'+scrapeHint(fields,hDbg);
+  st.innerHTML='<span class="b-ok badge">Scraped</span> '+Object.keys(fields).length+' field(s).';
+}
+function ivBadge(v){try{const n=b64ToBytes(v).length;return `<span class="b-ok badge">${n} bytes → ${n===12?'GCM nonce':n===16?'CBC/GCM IV':'check size'}</span>`;}catch(e){return '';}}
+function keyBadge(v){try{const n=b64ToBytes(v).length;return `<span class="b-warn badge">${n} bytes → RSA-wrapped, needs server private key</span>`;}catch(e){return '';}}
+function jwtInfo(t){const m=t.replace(/^Bearer\s+/i,'');const p=m.split('.');if(p.length!==3)return t;try{const b=JSON.parse(atob(p[1].replace(/-/g,'+').replace(/_/g,'/')));const exp=b.exp?new Date(b.exp*1000):null;const expd=exp?(exp<new Date()?'<span class="b-err badge">EXPIRED '+exp.toLocaleString()+'</span>':'<span class="b-ok badge">valid until '+exp.toLocaleString()+'</span>'):'';return `sub=${b.sub||'?'} ${expd}`;}catch(e){return t;}}
+function scrapeHint(f,hDbg){
+  if(f[hDbg]||f['x-key'])return '<div class="small" style="margin-top:10px">✅ Plaintext AES key found in headers (hook active) and auto-filled below — paste the body in step 5 and decrypt.</div>';
+  return '<div class="small" style="margin-top:10px">⚠ No plaintext AES key in headers. Make sure the step-1 hook is installed and active, or use the step-3 fallback.</div>';
+}
+
+/* ---------- decrypt ---------- */
+async function importKey(keyBytes,algo){return crypto.subtle.importKey('raw',keyBytes,{name:algo},false,['decrypt']);}
+async function tryGCM(keyBytes,ivBytes,ct){
+  const key=await importKey(keyBytes,'AES-GCM');
+  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:ivBytes,tagLength:128},key,ct);
+  return new Uint8Array(pt);
+}
+async function tryCBC(keyBytes,ivBytes,ct){
+  if(ivBytes.length!==16)throw new Error('CBC needs 16-byte IV (got '+ivBytes.length+')');
+  const key=await importKey(keyBytes,'AES-CBC');
+  const pt=await crypto.subtle.decrypt({name:'AES-CBC',iv:ivBytes},key,ct);
+  return new Uint8Array(pt);
+}
+async function decryptField(inId,outId){
+  const statusId=inId==='reqBody'?'reqStatus':'respStatus';
+  const st=document.getElementById(statusId);
+  const out=document.getElementById(outId);
+  const data=document.getElementById(inId).value.trim();
+  if(!data){st.innerHTML='<span class="b-warn badge">No ciphertext</span>';return;}
+  const keyStr=document.getElementById('aesKey').value.trim();
+  const ivStr=document.getElementById('iv').value.trim();
+  if(!keyStr){st.innerHTML='<span class="b-err badge">AES key required</span> — see steps 1–4.';return;}
+  if(!ivStr){st.innerHTML='<span class="b-err badge">IV required</span>';return;}
+  let keyBytes,ivBytes,ct;
+  try{keyBytes=autoBytes(keyStr);}catch(e){st.innerHTML='<span class="b-err badge">Bad key encoding</span>';return;}
+  try{ivBytes=b64ToBytes(ivStr);}catch(e){try{ivBytes=hexToBytes(ivStr);}catch(e2){st.innerHTML='<span class="b-err badge">Bad IV</span>';return;}}
+  try{ct=encBytes(data,document.getElementById('ctEnc').value);}catch(e){st.innerHTML='<span class="b-err badge">Bad ciphertext encoding</span>';return;}
+  if(![16,24,32].includes(keyBytes.length)){st.innerHTML='<span class="b-err badge">Key is '+keyBytes.length+' bytes</span> — need 16/24/32.';return;}
+
+  const mode=document.getElementById('mode').value;
+  const attempts=mode==='auto'?['gcm','cbc']:[mode];
+  let lastErr='';
+  for(const m of attempts){
+    try{
+      const pt=m==='gcm'?await tryGCM(keyBytes,ivBytes,ct):await tryCBC(keyBytes,ivBytes,ct);
+      const txt=prettyJSON(bytesToText(pt));
+      out.style.display='block';out.textContent=txt;
+      st.innerHTML='<span class="b-ok badge">Decrypted ('+m.toUpperCase()+')</span>';
+      return;
+    }catch(e){lastErr=e.message||String(e);}
+  }
+  out.style.display='none';
+  st.innerHTML='<span class="b-err badge">Failed</span> '+lastErr+' — check key/IV/mode/encoding.';
+}
+
+/* ---------- demo (self-contained, encrypts then decrypts so you can see it work) ---------- */
+async function loadSample(){
+  const st=document.getElementById('scrapeStatus');
+  try{
+    const keyBytes=crypto.getRandomValues(new Uint8Array(32));
+    const iv=crypto.getRandomValues(new Uint8Array(12));
+    const key=await crypto.subtle.importKey('raw',keyBytes,{name:'AES-GCM'},false,['encrypt']);
+    const plain=JSON.stringify({demo:true,message:"this is a locally-encrypted demo payload",items:[1,2,3]});
+    const ctBuf=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(plain));
+    const b64=b=>btoa(String.fromCharCode(...new Uint8Array(b)));
+    const keyB64=b64(keyBytes), ivB64=b64(iv), ctB64=b64(ctBuf);
+    document.getElementById('rawHeaders').value=
+`fetch("https://api.example.com/api/getData?page=0&size=5", {
+  "headers": {
+    "accept": "application/json, text/plain, */*",
+    "authorization": "Bearer <token>",
+    "x-iv": "${ivB64}",
+    "x-encrypted-key": "<rsa-wrapped-key-base64>",
+    "x-debug-key": "${keyB64}"
+  },
+  "method": "GET"
+});`;
+    document.getElementById('respBody').value=ctB64;
+    scrape();
+    st.innerHTML='<span class="b-ok badge">Demo loaded</span> — scroll to step 5 and click “Decrypt response body”.';
+  }catch(e){st.innerHTML='<span class="b-err badge">Demo failed: '+e.message+'</span>';}
+}
+
+/* ---------- init ---------- */
+document.getElementById('hook').value=HOOK;
+document.getElementById('sniffer').value=SNIFFER;
+</script>
+</body>
+</html>
