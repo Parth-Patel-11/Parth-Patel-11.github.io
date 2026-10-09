@@ -332,8 +332,10 @@ async function decryptField(inId,outId){
   const statusId=inId==='reqBody'?'reqStatus':'respStatus';
   const st=document.getElementById(statusId);
   const out=document.getElementById(outId);
-  const data=document.getElementById(inId).value.trim();
+  let data=document.getElementById(inId).value.trim();
   if(!data){st.innerHTML='<span class="b-warn badge">No ciphertext</span>';return;}
+  // auto-unwrap common JSON envelopes: {"response":"..."} / {"data":"..."} / {"payload":"..."}
+  if(data[0]==='{'){try{const o=JSON.parse(data);const inner=o.response||o.data||o.payload||o.result;if(typeof inner==='string')data=inner.trim();}catch(e){}}
   const keyStr=document.getElementById('aesKey').value.trim();
   const ivStr=document.getElementById('iv').value.trim();
   if(!keyStr){st.innerHTML='<span class="b-err badge">AES key required</span> — see steps 1–4.';return;}
